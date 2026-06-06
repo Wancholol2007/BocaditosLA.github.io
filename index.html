@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bocaditos – Hecho a mano con el sabor de casa</title>
+  <meta name="description" content="Bocaditos – Hecho a mano con el sabor de casa." />
+  <link rel="icon" href="BocaditosLogo.jpg" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+ 
+  <style>
+    /* ══════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════ */
+    :root {
+      --black:    #0e0e0e;
+      --coal:     #1a1a1a;
+      --charcoal: #242424;
+      --surface:  #2a2a2a;
+      --border:   rgba(255,255,255,.07);
+ 
+      --gold:     #f5c518;
+      --orange:   #ff6b00;
+      --orange-l: #ff8c3a;
+      --white:    #f5f0e8;
+      --muted:    rgba(245,240,232,.55);
+ 
+      --ff-head: 'Fredoka', sans-serif;
+      --ff-body: 'DM Sans', sans-serif;
+ 
+      --r-sm:  .5rem;
+      --r-md:  1rem;
+      --r-xl:  2rem;
+ 
+      --ease-out-expo: cubic-bezier(.19,1,.22,1);
+      --transition: .35s var(--ease-out-expo);
+    }
+ 
+    /* ══════════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html { scroll-behavior: smooth; font-size: 16px; }
+ 
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--ff-body);
+      font-weight: 400;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+ 
+    img { display: block; max-width: 100%; }
+    a   { color: inherit; text-decoration: none; }
+    ul  { list-style: none; }
+ 
+    /* ── Grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: .45;
+    }
+ 
+    /* ══════════════════════════════════════════
+       UTILITIES
+    ══════════════════════════════════════════ */
+    .container {
+      width: min(1200px, 100%);
+      margin-inline: auto;
+      padding-inline: clamp(1rem, 5vw, 3rem);
+    }
+ 
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .section-tag::before {
+      content: '';
+      display: block;
+      width: 2rem;
+      height: 2px;
+      background: var(--gold);
+    }
+ 
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .75rem 1.75rem;
+      border-radius: 100px;
+      font-family: var(--ff-head);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--orange-l);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(255,107,0,.4);
+    }
+    .btn-outline {
+      background: transparent;
+      border-color: rgba(255,255,255,.35);
+      color: var(--white);
+    }
+    .btn-outline:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-2px);
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: var(--black);
+    }
+    .btn-gold:hover {
+      background: #ffd23a;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(245,197,24,.35);
+    }
+ 
+    /* ══════════════════════════════════════════
+       SCROLL REVEAL
+    ══════════════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s var(--ease-out-expo), transform .7s var(--ease-out-expo);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+ 
+    /* ══════════════════════════════════════════
+       HEADER / NAV
+    ══════════════════════════════════════════ */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1.1rem 0;
+      transition: background .4s ease, backdrop-filter .4s ease, padding .4s ease, box-shadow .4s ease;
+    }
+    .header.scrolled {
+      background: rgba(14,14,14,.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: .75rem 0;
+      box-shadow: 0 1px 0 var(--border);
+    }
+ 
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+ 
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      flex-shrink: 0;
+    }
+    .logo-mark {
+      width: 44px; height: 44px;
+      background: var(--gold);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-family: var(--ff-head);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--black);
+      letter-spacing: -.05em;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .logo-text {
+      font-family: var(--ff-head);
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .logo-text span {
+      display: block;
+      font-size: .65rem;
+      font-weight: 400;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+ 
+    /* Desktop nav links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-links a {
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 2px;
+      background: var(--gold);
+      transition: width var(--transition);
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+ 
+    .nav-cta { display: flex; align-items: center; gap: .75rem; }
+ 
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: .3rem;
+      background: none;
+      border: none;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+ 
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(10,10,10,.97);
+      backdrop-filter: blur(24px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .mobile-menu.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .mobile-menu a {
+      font-family: var(--ff-head);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--white);
+      transition: color var(--transition);
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+ 
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+ 
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        /* real photo goes here – using a rich placeholder gradient */
+        radial-gradient(ellipse 80% 80% at 65% 40%, #3d2200 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 20% 70%, #1a0c00 0%, transparent 55%),
+        linear-gradient(160deg, #0e0e0e 0%, #1a1200 50%, #0e0e0e 100%);
+      /* ── REPLACE WITH YOUR HERO IMAGE ──
+         background-image: url('your-outdoor-lounge-photo.jpg');
+         background-size: cover;
+         background-position: center;
+      */
+    }
+ 
+    /* Decorative bokeh blobs */
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,107,0,.18) 0%, transparent 70%);
+      top: -100px; right: -100px;
+      animation: pulse-blob 6s ease-in-out infinite;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,197,24,.12) 0%, transparent 70%);
+      bottom: 0; left: 10%;
+      animation: pulse-blob 8s ease-in-out 2s infinite;
+    }
+    @keyframes pulse-blob {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(1.15); opacity: .7; }
+    }
+ 
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(10,10,10,.5) 0%, rgba(10,10,10,.3) 50%, rgba(10,10,10,.85) 100%);
+    }
+ 
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+    }
+ 
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(245,197,24,.12);
+      border: 1px solid rgba(245,197,24,.3);
+      border-radius: 100px;
+      padding: .35rem 1rem;
+      font-size: .8rem;
+      font-weight: 500;
+      letter-spacing: .08em;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+    .hero-badge svg { width: 14px; height: 14px; }
+ 
+    .hero-h1 {
+      font-family: var(--ff-head);
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      margin-bottom: 1.25rem;
+    }
+    .hero-h1 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+ 
+    .hero-sub {
+      font-size: clamp(.95rem, 2vw, 1.15rem);
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem .75rem;
+      align-items: center;
+    }
+    .hero-dot { color: var(--orange); font-size: 1.4rem; line-height: 1; }
+ 
+    .hero-actions { display: flex; flex-wrap: wrap; gap: .85rem; }
+ 
+    /* Floating stats bar */
+    .hero-stats {
+      position: absolute;
+      bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      display: flex;
+      gap: 0;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+    }
+    .hero-stat {
+      padding: 1rem 2rem;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .hero-stat:last-child { border-right: none; }
+    .hero-stat strong {
+      display: block;
+      font-family: var(--ff-head);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .hero-stat small {
+      font-size: .72rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+ 
+    /* Scrolling ticker */
+    .ticker-wrap {
+      position: relative;
+      overflow: hidden;
+      padding: .85rem 0;
+      background: var(--orange);
+    }
+    .ticker {
+      display: flex;
+      width: max-content;
+      animation: ticker-scroll 25s linear infinite;
+    }
+    @keyframes ticker-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0 2rem;
+      font-family: var(--ff-head);
+      font-size: .9rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .ticker-sep { color: rgba(255,255,255,.5); font-size: 1.2rem; }
+ 
+    /* ══════════════════════════════════════════
+       ABOUT
+    ══════════════════════════════════════════ */
+    .about {
+      padding: clamp(4rem, 8vw, 7rem) 0;
+      position: relative;
+    }
+ 
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 5rem);
+      align-items: center;
+    }
+ 
+    .about-visual {
+      position: relative;
+    }
+ 
+    .about-img-frame {
+      border-radius: var(--r-xl);
+      overflow: hidden;
+      aspect-ratio: 4/5;
+      background: var(--charcoal);
+      background: linear-gradient(135deg, #2a1a00, #1a0f00, #2a2000);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 5rem;
+    }
+    .about-img-frame .placeholder-text {
+      font-family: var(--ff-head);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .08em;
+    }
+ 
+    /* Floating badge on image */
+    .about-badge {
+      position: absolute;
+      bottom: 1.5rem;
+      right: -1.5rem;
+      background: var(--gold);
+      color: var(--black);
+      border-radius: var(--r-md);
+      padding: 1rem 1.25rem;
+      font-family: var(--ff-head);
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2;
+      box-shadow: 0 20px 40px rgba(0,0,0,.4);
+    }
+    .about-badge strong { display: block; font-size: 1.8rem; }
+    .about-badge span   { font-size: .8rem; }
+ 
+    .about-text h2 {
+      font-family: var(--ff-head);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+    .about-text h2 span { color: var(--orange); }
+ 
+    .about-text p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.8;
+    }
+ 
+    /* Health cert banner */
+    .cert-banner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(245,197,24,.07);
+      border: 1px solid rgba(245,197,24,.2);
+      border-radius: var(--r-md);
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .cert-icon {
+      width: 40px; height: 40px;
+      background: rgba(245,197,24,.15);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .cert-banner p { font-size: .85rem; color: var(--muted); margin: 0; }
+    .cert-banner strong { color: var(--gold); }
+ 
+    /* Icon features */
+    .about-features {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .feature-chip {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      background: var(--charcoal);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: .55rem 1.1rem;
+      font-size: .9rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .feature-chip:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+    .feature-chip .fi { font-size: 1.1rem; }
+ 
+    /* ══════════════════════════════════════════
+       MENU
+    ══════════════════════════════════════════ */
+    .menu-section {
+      padding: clamp(4rem, 8vw, 7rem) 0;
+      background: var(--coal);
+      position: relative;
+      overflow: hidden;
+    }
+    .menu-section::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,107,0,.06) 0%, transparent 70%);
+    }
+ 
+    .section-header {
+      margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    }
+    .section-header h2 {
+      font-family: var(--ff-head);
+      font-size: clamp(2rem, 4.5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: .5rem;
+    }
+    .section-header p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 520px;
+    }
+ 
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+ 
+    .menu-card {
+      background: var(--charcoal);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .35s var(--ease-out-expo), box-shadow .35s ease, border-color .35s ease;
+      position: relative;
+      group: true;
+    }
+    .menu-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px rgba(0,0,0,.5);
+      border-color: rgba(255,107,0,.3);
+    }
+ 
+    .menu-card-img {
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      position: relative;
+    }
+    /* Placeholder gradient per category (REPLACE with real photos) */
+    .menu-card-img.cat-ice   { background: linear-gradient(135deg, #1a2a4a, #0a1020, #2a1a40); }
+    .menu-card-img.cat-pan   { background: linear-gradient(135deg, #4a2a00, #2a1500, #3a2000); }
+    .menu-card-img.cat-dom   { background: linear-gradient(135deg, #3a0a0a, #1a0505, #2a1010); }
+    .menu-card-img.cat-cafe  { background: linear-gradient(135deg, #1a1005, #0a0800, #302010); }
+    .menu-card-img.cat-cro   { background: linear-gradient(135deg, #302000, #1a1000, #2a1800); }
+    .menu-card-img.cat-torta { background: linear-gradient(135deg, #201a00, #100d00, #2a2500); }
+ 
+    .menu-card-img-inner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      transition: transform .5s var(--ease-out-expo);
+    }
+    .menu-card:hover .menu-card-img-inner { transform: scale(1.08); }
+ 
+    /* Hover overlay */
+    .menu-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .menu-card:hover .menu-card-overlay { opacity: 1; }
+    .overlay-price {
+      font-family: var(--ff-head);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .overlay-desc {
+      font-size: .85rem;
+      color: var(--white);
+      text-align: center;
+      padding: 0 1rem;
+      margin-top: .35rem;
+    }
+ 
+    .menu-card-body { padding: 1.25rem; }
+    .menu-card-cat {
+      font-size: .7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      font-weight: 600;
+      margin-bottom: .35rem;
+    }
+    .menu-card-name {
+      font-family: var(--ff-head);
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: .35rem;
+    }
+    .menu-card-desc {
+      font-size: .85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+ 
+    .menu-cta {
+      margin-top: 3rem;
+      text-align: center;
+    }
+ 
+    /* ══════════════════════════════════════════
+       LOUNGE
+    ══════════════════════════════════════════ */
+    .lounge {
+      padding: clamp(4rem, 8vw, 7rem) 0;
+    }
+ 
+    .lounge-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 5rem);
+      align-items: start;
+    }
+ 
+    .lounge-text h2 {
+      font-family: var(--ff-head);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+    .lounge-text h2 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+    .lounge-text p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+ 
+    /* Hours cards */
+    .hours-cards {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      margin-bottom: 1.75rem;
+    }
+    .hours-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--charcoal);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: .85rem 1.25rem;
+    }
+    .hours-card-day {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-weight: 500;
+    }
+    .hours-card-day .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+    .hours-card.special .dot { background: var(--gold); }
+    .hours-card.special .hours-card-day { color: var(--gold); font-weight: 600; }
+    .hours-time {
+      font-family: var(--ff-head);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+ 
+    .no-reserv-note {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .no-reserv-note .icon {
+      font-size: 1.4rem;
+    }
+ 
+    /* Masonry gallery */
+    .lounge-gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+      gap: .75rem;
+    }
+    .gallery-item {
+      border-radius: var(--r-md);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .35s var(--ease-out-expo), box-shadow .35s ease;
+    }
+    .gallery-item:hover {
+      transform: scale(1.02);
+      box-shadow: 0 16px 32px rgba(0,0,0,.5);
+    }
+    .gallery-item:nth-child(1) { grid-row: span 2; }
+    .gallery-placeholder {
+      width: 100%;
+      aspect-ratio: 1;
+      /* REPLACE with real outdoor lounge photos */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      font-size: 2.5rem;
+    }
+    .gallery-item:nth-child(1) .gallery-placeholder { aspect-ratio: auto; height: 100%; }
+ 
+    .gp1 { background: linear-gradient(135deg, #1a0800, #0e0500, #251200); }
+    .gp2 { background: linear-gradient(135deg, #081a08, #030e03, #0f2010); }
+    .gp3 { background: linear-gradient(135deg, #1a1200, #0e0900, #201800); }
+    .gp4 { background: linear-gradient(135deg, #1a0005, #0e0003, #200010); }
+    .gp5 { background: linear-gradient(135deg, #00101a, #00060e, #001525); }
+ 
+    .gallery-label {
+      font-family: var(--ff-body);
+      font-size: .7rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+    }
+ 
+    /* ══════════════════════════════════════════
+       SOCIAL / INSTAGRAM
+    ══════════════════════════════════════════ */
+    .social-proof {
+      padding: clamp(4rem, 8vw, 7rem) 0;
+      background: var(--coal);
+    }
+ 
+    .insta-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .insta-handle {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-family: var(--ff-head);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .insta-handle svg { width: 20px; -webkit-text-fill-color: initial; }
+ 
+    .insta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: .75rem;
+    }
+ 
+    .insta-post {
+      aspect-ratio: 1;
+      border-radius: var(--r-md);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: transform .35s var(--ease-out-expo);
+    }
+    .insta-post:hover { transform: scale(1.03); }
+    .insta-post:hover .insta-overlay { opacity: 1; }
+ 
+    .insta-inner {
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      gap: .35rem;
+    }
+    /* REPLACE each with a real IG photo */
+    .ip1 { background: linear-gradient(135deg, #2a1a00, #150d00); }
+    .ip2 { background: linear-gradient(135deg, #1a0a0a, #0a0505); }
+    .ip3 { background: linear-gradient(135deg, #001a10, #000a08); }
+    .ip4 { background: linear-gradient(135deg, #0a0a1a, #050510); }
+ 
+    .insta-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .insta-overlay svg { width: 24px; height: 24px; fill: #fff; }
+    .insta-overlay span {
+      font-size: .8rem;
+      color: var(--white);
+      font-weight: 500;
+    }
+ 
+    /* Crafted quote */
+    .crafted-quote {
+      margin-top: 3.5rem;
+      text-align: center;
+      position: relative;
+    }
+    .crafted-quote::before {
+      content: '"';
+      position: absolute;
+      top: -2rem; left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--ff-head);
+      font-size: 8rem;
+      color: var(--orange);
+      opacity: .12;
+      line-height: 1;
+    }
+    .crafted-quote blockquote {
+      font-family: var(--ff-head);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.2;
+      position: relative;
+    }
+    .crafted-quote blockquote span { color: var(--gold); }
+    .crafted-quote cite {
+      display: block;
+      margin-top: 1rem;
+      font-size: .85rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-style: normal;
+    }
+ 
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    footer {
+      background: var(--black);
+      border-top: 1px solid var(--border);
+      padding-top: clamp(3rem, 6vw, 5rem);
+    }
+ 
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+ 
+    .footer-brand .logo { margin-bottom: 1.25rem; }
+    .footer-brand p {
+      font-size: .9rem;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 280px;
+      margin-bottom: 1.25rem;
+    }
+ 
+    .social-links {
+      display: flex;
+      gap: .65rem;
+    }
+    .social-link {
+      width: 38px; height: 38px;
+      border-radius: var(--r-sm);
+      background: var(--charcoal);
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      transition: var(--transition);
+    }
+    .social-link:hover {
+      background: var(--orange);
+      border-color: var(--orange);
+      transform: translateY(-2px);
+    }
+ 
+    .footer-col h4 {
+      font-family: var(--ff-head);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      color: var(--white);
+    }
+ 
+    .footer-col ul { display: flex; flex-direction: column; gap: .65rem; }
+    .footer-col ul li a, .footer-col ul li span {
+      font-size: .9rem;
+      color: var(--muted);
+      transition: color var(--transition);
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+    }
+    .footer-col ul li a:hover { color: var(--gold); }
+ 
+    /* Map placeholder */
+    .map-embed {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: var(--r-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--charcoal);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .75rem;
+      font-size: .85rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color var(--transition);
+      text-align: center;
+      padding: 1rem;
+    }
+    .map-embed:hover { border-color: var(--orange); }
+    .map-embed svg { width: 32px; height: 32px; color: var(--orange); }
+    .map-embed a {
+      color: var(--orange);
+      font-weight: 500;
+      font-size: .9rem;
+    }
+ 
+    /* Footer bottom */
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .footer-bottom p {
+      font-size: .82rem;
+      color: var(--muted);
+    }
+    .footer-bottom a {
+      color: var(--gold);
+      transition: opacity var(--transition);
+    }
+    .footer-bottom a:hover { opacity: .7; }
+ 
+    /* ══════════════════════════════════════════
+       WHATSAPP FAB
+    ══════════════════════════════════════════ */
+    .wa-fab {
+      position: fixed;
+      bottom: 1.75rem;
+      right: 1.75rem;
+      z-index: 900;
+      width: 54px; height: 54px;
+      background: #25d366;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 24px rgba(37,211,102,.4);
+      transition: transform .3s var(--ease-out-expo), box-shadow .3s ease;
+    }
+    .wa-fab:hover {
+      transform: scale(1.1);
+      box-shadow: 0 14px 32px rgba(37,211,102,.55);
+    }
+    .wa-fab svg { width: 28px; height: 28px; fill: #fff; }
+ 
+    /* Pulse ring */
+    .wa-fab::before {
+      content: '';
+      position: absolute;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: #25d366;
+      animation: wa-pulse 2s ease-out infinite;
+    }
+    @keyframes wa-pulse {
+      0%   { transform: scale(1); opacity: .6; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+ 
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .nav-links, .nav-cta .btn:not(.btn-gold) { display: none; }
+      .hamburger { display: flex; }
+      .mobile-menu { display: flex; }
+ 
+      .about-grid   { grid-template-columns: 1fr; }
+      .lounge-grid  { grid-template-columns: 1fr; }
+      .about-badge  { right: 1rem; }
+      .footer-grid  { grid-template-columns: 1fr 1fr; }
+      .insta-grid   { grid-template-columns: repeat(2, 1fr); }
+    }
+ 
+    @media (max-width: 640px) {
+      .hero-stats { display: none; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .insta-grid  { grid-template-columns: repeat(2, 1fr); }
+      .lounge-gallery { grid-template-columns: 1fr 1fr; }
+      .lounge-gallery .gallery-item:nth-child(1) { grid-column: span 2; }
+    }
+  </style>
+</head>
+<body>
+ 
+<!-- ══ HEADER ══ -->
+<header class="header" id="header" role="banner">
+  <div class="container">
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#inicio" class="logo" aria-label="Bocaditos home">
+        <div class="logo-mark" aria-hidden="true">bo</div>
+        <div class="logo-text">
+          Bocaditos
+          <span>Artisan Bakery &amp; Lounge</span>
+        </div>
+      </a>
+ 
+      <ul class="nav-links" role="list">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#menu">Menú</a></li>
+        <li><a href="#lounge">Lounge</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+ 
+      <div class="nav-cta">
+        <a href="https://wa.me/message/XXXXXXXXXX" class="btn btn-gold" target="_blank" rel="noopener noreferrer" aria-label="Order on WhatsApp">
+          Ordenar Ahora
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobile-menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+ 
+<!-- ══ MOBILE MENU ══ -->
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Mobile navigation" aria-modal="true">
+  <a href="#inicio"   onclick="closeMobileMenu()">Inicio</a>
+  <a href="#menu"     onclick="closeMobileMenu()">Menú</a>
+  <a href="#lounge"   onclick="closeMobileMenu()">Lounge</a>
+  <a href="#contacto" onclick="closeMobileMenu()">Contacto</a>
+  <a href="https://wa.me/message/XXXXXXXXXX" class="btn btn-gold" target="_blank" rel="noopener noreferrer">Ordenar Ahora</a>
+</div>
+ 
+<!-- ══ HERO ══ -->
+<section class="hero" id="inicio" aria-label="Hero section">
+  <div class="hero-bg" role="presentation"></div>
+  <div class="hero-overlay" role="presentation"></div>
+ 
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge" role="note">
+        <!-- Star SVG -->
+        <svg viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M7 1l1.5 3.5L12 5l-2.5 2.5.5 3.5L7 9.5 4 11l.5-3.5L2 5l3.5-.5L7 1z"/></svg>
+        Sun Valley's Hidden Gem — Since 2022
+      </div>
+ 
+      <h1 class="hero-h1">
+        <em>Outdoor Lounge</em> &amp;<br/>Artisan Bakery
+      </h1>
+ 
+      <p class="hero-sub" aria-label="Menu categories">
+        <span>Coffee</span>
+        <span class="hero-dot" aria-hidden="true">·</span>
+        <span>Pastries</span>
+        <span class="hero-dot" aria-hidden="true">·</span>
+        <span>Desserts</span>
+        <span class="hero-dot" aria-hidden="true">·</span>
+        <span>Ice Cream</span>
+        <span class="hero-dot" aria-hidden="true">·</span>
+        <span>Antojitos</span>
+      </p>
+ 
+      <div class="hero-actions">
+        <a href="#menu"   class="btn btn-primary">Ver Menú</a>
+        <a href="https://maps.google.com/?q=8038+Fair+Ave+Sun+Valley+CA" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+          Cómo Llegar
+        </a>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="hero-stats" role="region" aria-label="Quick facts">
+    <div class="hero-stat">
+      <strong>☀️</strong>
+      <small>Outdoor Lounge</small>
+    </div>
+    <div class="hero-stat">
+      <strong>100%</strong>
+      <small>Artesanal</small>
+    </div>
+    <div class="hero-stat">
+      <strong>LA</strong>
+      <small>Health Certified</small>
+    </div>
+    <div class="hero-stat">
+      <strong>Dom</strong>
+      <small>10am – 5pm</small>
+    </div>
+  </div>
+</section>
+ 
+<!-- ══ TICKER ══ -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker" role="presentation">
+    <!-- duplicated for seamless loop -->
+    <span class="ticker-item">☕ Café Artesanal <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">🍦 Helados Premium <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">🥐 Almohábanas <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">🌮 Domingos de Antojitos <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">🌿 Outdoor Lounge <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">One Bocado is Never Enough <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">☕ Café Artesanal <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">🍦 Helados Premium <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">🥐 Almohábanas <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">🌮 Domingos de Antojitos <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">🌿 Outdoor Lounge <span class="ticker-sep">·</span></span>
+    <span class="ticker-item">One Bocado is Never Enough <span class="ticker-sep">·</span></span>
+  </div>
+</div>
+ 
+<!-- ══ ABOUT ══ -->
+<section class="about reveal" id="nosotros" aria-labelledby="about-h2">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual reveal reveal-delay-1">
+        <div class="about-img-frame" role="img" aria-label="Bocaditos bakery interior — replace with real photo">
+          <img src="Interiorbocaditos.png" alt="Interior de Bocaditos"/>
+        </div>
+        <div class="about-badge" aria-label="Since 2022">
+          <strong>✨</strong>
+          <span>Sun Valley,&nbsp;CA</span>
+        </div>
+      </div>
+ 
+      <div class="about-text reveal reveal-delay-2">
+        <span class="section-tag">Sobre Nosotros</span>
+        <h2 id="about-h2">Más que una panadería.<br/><span>Un lugar para quedarse.</span></h2>
+        <p>
+          En Bocaditos fusionamos la calidez de la panadería artesanal con la vibra relajada de un lounge al aire libre. Cada bocado está elaborado con ingredientes frescos y mucho amor — desde nuestras almohábanas esponjosas hasta nuestros helados cremosos de autor.
+        </p>
+        <p>
+          Somos el hidden gem de Sun Valley que una vez que descubres, no puedes dejar de visitar.
+        </p>
+ 
+        <div class="cert-banner" role="note" aria-label="Health certification">
+          <div class="cert-icon" aria-hidden="true">✅</div>
+          <p>
+            <strong>Licenciados e inspeccionados</strong> por el Departamento de Salud del Condado de Los Ángeles. Tu seguridad alimentaria, nuestra prioridad.
+          </p>
+        </div>
+ 
+        <div class="about-features" role="list" aria-label="What we offer">
+          <div class="feature-chip" role="listitem"><span class="fi" aria-hidden="true">☕</span> Café de Especialidad</div>
+          <div class="feature-chip" role="listitem"><span class="fi" aria-hidden="true">🥐</span> Panadería Artesanal</div>
+          <div class="feature-chip" role="listitem"><span class="fi" aria-hidden="true">🍦</span> Helados de Autor</div>
+          <div class="feature-chip" role="listitem"><span class="fi" aria-hidden="true">🌿</span> Patio al Aire Libre</div>
+          <div class="feature-chip" role="listitem"><span class="fi" aria-hidden="true">🌮</span> Antojitos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- ══ MENU ══ -->
+<section class="menu-section" id="menu" aria-labelledby="menu-h2">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">Lo Más Amado</span>
+      <h2 id="menu-h2">Nuestro Menú<br/>Destacado</h2>
+      <p>Elaborado con pasión, pensado para sorprenderte. Cada visita hay algo nuevo que descubrir.</p>
+    </div>
+ 
+    <div class="menu-grid" role="list">
+ 
+      <!-- Card 1 -->
+      <article class="menu-card reveal reveal-delay-1" role="listitem" aria-label="Helados Artesanales">
+        <div class="menu-card-img cat-ice">
+          <div class="menu-card-img-inner" aria-hidden="true">
+            🍦
+            <!-- REPLACE: <img src="helado.jpg" alt="Helados artesanales de Bocaditos"/> -->
+          </div>
+          <div class="menu-card-overlay" aria-hidden="true">
+            <div>
+              <div class="overlay-price">Desde $5</div>
+              <div class="overlay-desc">Sabores únicos de temporada,<br/>cremosos y de autor</div>
+            </div>
+          </div>
+        </div>
+        <div class="menu-card-body">
+          <div class="menu-card-cat">Postres Fríos</div>
+          <h3 class="menu-card-name">Helados Artesanales</h3>
+          <p class="menu-card-desc">Cremosos, hechos a mano con sabores únicos de temporada. Prueba nuestro favorito de la casa.</p>
+        </div>
+      </article>
+ 
+      <!-- Card 2 -->
+      <article class="menu-card reveal reveal-delay-2" role="listitem" aria-label="Almohábanas">
+        <div class="menu-card-img cat-pan">
+          <div class="menu-card-img-inner" aria-hidden="true">
+            🧀
+            <!-- REPLACE: <img src="almohabana.jpg" alt="Almohábanas artesanales"/> -->
+          </div>
+          <div class="menu-card-overlay" aria-hidden="true">
+            <div>
+              <div class="overlay-price">Desde $3</div>
+              <div class="overlay-desc">Receta colombiana tradicional,<br/>crujientes por fuera, suaves por dentro</div>
+            </div>
+          </div>
+        </div>
+        <div class="menu-card-body">
+          <div class="menu-card-cat">Panadería Estrella</div>
+          <h3 class="menu-card-name">Almohábanas</h3>
+          <p class="menu-card-desc">Nuestro producto insignia. Receta colombiana tradicional con queso fresco. Irresistibles.</p>
+        </div>
+      </article>
+ 
+      <!-- Card 3 -->
+      <article class="menu-card reveal reveal-delay-3" role="listitem" aria-label="Domingos de Antojitos">
+        <div class="menu-card-img cat-dom">
+          <div class="menu-card-img-inner" aria-hidden="true">
+            🌮
+            <!-- REPLACE: <img src="antojitos.jpg" alt="Antojitos del domingo"/> -->
+          </div>
+          <div class="menu-card-overlay" aria-hidden="true">
+            <div>
+              <div class="overlay-price">Dom 10am–5pm</div>
+              <div class="overlay-desc">Menú especial de antojitos<br/>solo los domingos</div>
+            </div>
+          </div>
+        </div>
+        <div class="menu-card-body">
+          <div class="menu-card-cat">Especial Dominical</div>
+          <h3 class="menu-card-name">Domingos de Antojitos</h3>
+          <p class="menu-card-desc">El evento de la semana. Antojitos especiales, ambiente festivo en nuestro patio exterior.</p>
+        </div>
+      </article>
+ 
+      <!-- Card 4 -->
+      <article class="menu-card reveal reveal-delay-4" role="listitem" aria-label="Café y Cappuccino">
+        <div class="menu-card-img cat-cafe">
+          <div class="menu-card-img-inner" aria-hidden="true">
+            ☕
+            <!-- REPLACE: <img src="cafe.jpg" alt="Café y cappuccino artesanal"/> -->
+          </div>
+          <div class="menu-card-overlay" aria-hidden="true">
+            <div>
+              <div class="overlay-price">Desde $4</div>
+              <div class="overlay-desc">Espresso, cappuccino, latte<br/>y bebidas frías de temporada</div>
+            </div>
+          </div>
+        </div>
+        <div class="menu-card-body">
+          <div class="menu-card-cat">Bebidas Calientes &amp; Frías</div>
+          <h3 class="menu-card-name">Café &amp; Cappuccino</h3>
+          <p class="menu-card-desc">Granos seleccionados, preparación artesanal. El ritual perfecto para comenzar tu día.</p>
+        </div>
+      </article>
+ 
+      <!-- Card 5 -->
+      <article class="menu-card reveal reveal-delay-1" role="listitem" aria-label="Croissants y Pasteles">
+        <div class="menu-card-img cat-cro">
+          <div class="menu-card-img-inner" aria-hidden="true">
+            🥐
+            <!-- REPLACE: <img src="croissant.jpg" alt="Croissants artesanales"/> -->
+          </div>
+          <div class="menu-card-overlay" aria-hidden="true">
+            <div>
+              <div class="overlay-price">Desde $4</div>
+              <div class="overlay-desc">Hojaldre laminado a mano,<br/>mantequilla francesa</div>
+            </div>
+          </div>
+        </div>
+        <div class="menu-card-body">
+          <div class="menu-card-cat">Bollería Fina</div>
+          <h3 class="menu-card-name">Croissants &amp; Pasteles</h3>
+          <p class="menu-card-desc">Hojaldre crujiente, laminado a mano. Disponibles en versión clásica, de almendra o chocolate.</p>
+        </div>
+      </article>
+ 
+      <!-- Card 6 -->
+      <article class="menu-card reveal reveal-delay-2" role="listitem" aria-label="Tortas y Pasteles Personalizados">
+        <div class="menu-card-img cat-torta">
+          <div class="menu-card-img-inner" aria-hidden="true">
+            🎂
+            <!-- REPLACE: <img src="torta.jpg" alt="Tortas artesanales personalizadas"/> -->
+          </div>
+          <div class="menu-card-overlay" aria-hidden="true">
+            <div>
+              <div class="overlay-price">Encargo previo</div>
+              <div class="overlay-desc">Tortas personalizadas para<br/>toda ocasión especial</div>
+            </div>
+          </div>
+        </div>
+        <div class="menu-card-body">
+          <div class="menu-card-cat">Para Celebrar</div>
+          <h3 class="menu-card-name">Tortas Especiales</h3>
+          <p class="menu-card-desc">Creamos el pastel de tus sueños. Escríbenos por WhatsApp para hacer tu pedido personalizado.</p>
+        </div>
+      </article>
+ 
+    </div><!-- /menu-grid -->
+ 
+    <div class="menu-cta reveal">
+      <a href="https://wa.me/message/XXXXXXXXXX" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+        Hacer un Pedido por WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+ 
+<!-- ══ LOUNGE ══ -->
+<section class="lounge" id="lounge" aria-labelledby="lounge-h2">
+  <div class="container">
+    <div class="lounge-grid">
+      <div class="lounge-text">
+        <span class="section-tag reveal">El Ambiente</span>
+        <h2 id="lounge-h2" class="reveal reveal-delay-1">
+          Nuestro Patio<br/><em>al Aire Libre</em>
+        </h2>
+        <p class="reveal reveal-delay-2">
+          Escapa de la rutina en nuestro rincón secreto. Un lounge exterior con luces cálidas, música suave y la brisa de Sun Valley. El lugar perfecto para relajarte, conversar y disfrutar de algo delicioso.
+        </p>
+        <p class="reveal reveal-delay-2">
+          No importa si vienes solo con un libro, con amigos o en familia — aquí siempre hay un lugar para ti.
+        </p>
+ 
+        <div class="hours-cards reveal reveal-delay-3" role="region" aria-label="Hours of operation">
+          <div class="hours-card special">
+            <div class="hours-card-day"><span class="dot"></span>Domingos — Lounge Especial</div>
+            <div class="hours-time">10am – 5pm</div>
+          </div>
+          <div class="hours-card">
+            <div class="hours-card-day"><span class="dot"></span>Martes – Sábados</div>
+            <div class="hours-time">9am – 6pm</div>
+          </div>
+          <div class="hours-card">
+            <div class="hours-card-day"><span class="dot" style="background:var(--muted)"></span>Lunes</div>
+            <div class="hours-time" style="color:var(--muted)">Cerrado</div>
+          </div>
+        </div>
+ 
+        <div class="no-reserv-note reveal reveal-delay-4">
+          <span class="icon" aria-hidden="true">🚪</span>
+          <p><strong>No se requieren reservaciones.</strong> Llega, encuentra tu mesa favorita y disfruta.</p>
+        </div>
+      </div>
+ 
+      <!-- Gallery -->
+      <div class="lounge-gallery reveal reveal-delay-2" role="region" aria-label="Lounge photo gallery">
+        <div class="gallery-item">
+          <div class="gallery-placeholder gp1" role="img" aria-label="Outdoor lounge atmosphere — replace with real photo">
+            🌿
+            <span class="gallery-label">[ Foto patio ]</span>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder gp2" role="img" aria-label="Evening ambiance — replace with real photo">
+            🌙
+            <span class="gallery-label">[ Foto noche ]</span>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder gp3" role="img" aria-label="Coffee and pastries on a table — replace with real photo">
+            ☕
+            <span class="gallery-label">[ Flat lay ]</span>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder gp4" role="img" aria-label="Friends enjoying the lounge — replace with real photo">
+            🫶
+            <span class="gallery-label">[ Clientes ]</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- ══ SOCIAL PROOF ══ -->
+<section class="social-proof" id="social" aria-labelledby="social-h2">
+  <div class="container">
+    <div class="insta-header">
+      <div>
+        <span class="section-tag reveal">Comunidad</span>
+        <h2 id="social-h2" class="reveal reveal-delay-1" style="font-family:var(--ff-head);font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:700;">
+          Síguenos en Instagram
+        </h2>
+      </div>
+      <a href="https://instagram.com/bocaditos.la" target="_blank" rel="noopener noreferrer"
+         class="insta-handle reveal reveal-delay-2" aria-label="Follow @bocaditos.la on Instagram">
+        <!-- Instagram icon -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="url(#ig-grad)" stroke-width="2" aria-hidden="true">
+          <defs>
+            <linearGradient id="ig-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%"   stop-color="#833ab4"/>
+              <stop offset="50%"  stop-color="#fd1d1d"/>
+              <stop offset="100%" stop-color="#fcb045"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="url(#ig-grad)" stroke="none"/>
+        </svg>
+        @bocaditos.la
+      </a>
+    </div>
+ 
+    <!-- Simulated IG grid (replace divs with <img> tags when you have real photos) -->
+    <div class="insta-grid" role="list">
+      <div class="insta-post ip1 reveal reveal-delay-1" role="listitem" tabindex="0" aria-label="Instagram post 1 — replace with real photo">
+        <div class="insta-inner" aria-hidden="true">🍦</div>
+        <div class="insta-overlay" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          <span>Ver en Instagram</span>
+        </div>
+      </div>
+      <div class="insta-post ip2 reveal reveal-delay-2" role="listitem" tabindex="0" aria-label="Instagram post 2 — replace with real photo">
+        <div class="insta-inner" aria-hidden="true">🥐</div>
+        <div class="insta-overlay" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          <span>Ver en Instagram</span>
+        </div>
+      </div>
+      <div class="insta-post ip3 reveal reveal-delay-3" role="listitem" tabindex="0" aria-label="Instagram post 3 — replace with real photo">
+        <div class="insta-inner" aria-hidden="true">🌮</div>
+        <div class="insta-overlay" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          <span>Ver en Instagram</span>
+        </div>
+      </div>
+      <div class="insta-post ip4 reveal reveal-delay-4" role="listitem" tabindex="0" aria-label="Instagram post 4 — replace with real photo">
+        <div class="insta-inner" aria-hidden="true">☕</div>
+        <div class="insta-overlay" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          <span>Ver en Instagram</span>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Crafted quote -->
+    <div class="crafted-quote reveal">
+      <blockquote>
+        "Crafted <span>Delicacies</span>.<br/>One Bocado is Never Enough."
+      </blockquote>
+      <cite>— El espíritu de Bocaditos</cite>
+    </div>
+  </div>
+</section>
+ 
+<!-- ══ FOOTER ══ -->
+<footer id="contacto">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- Brand col -->
+      <div class="footer-brand">
+        <a href="#inicio" class="logo" aria-label="Bocaditos home">
+          <div class="logo-mark" aria-hidden="true">bo</div>
+          <div class="logo-text">Bocaditos<span>Artisan Bakery &amp; Lounge</span></div>
+        </a>
+        <p>Sun Valley's hidden gem. Panadería artesanal y lounge al aire libre donde cada visita es una experiencia memorable.</p>
+        <div class="social-links" aria-label="Social media">
+          <a href="https://instagram.com/bocaditos.la" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram @bocaditos.la">📷</a>
+          <a href="https://wa.me/message/XXXXXXXXXX"    target="_blank" rel="noopener noreferrer" class="social-link" aria-label="WhatsApp">💬</a>
+          <a href="https://tiktok.com/@bocaditos.la"    target="_blank" rel="noopener noreferrer" class="social-link" aria-label="TikTok">🎵</a>
+        </div>
+      </div>
+ 
+      <!-- Hours col -->
+      <div class="footer-col">
+        <h4>Horario</h4>
+        <ul>
+          <li><span>🗓 Mar – Sáb &nbsp;&nbsp; 9:00am – 6:00pm</span></li>
+          <li><span style="color:var(--gold)">⭐ Domingos &nbsp;&nbsp; 10:00am – 5:00pm</span></li>
+          <li><span>❌ Lunes &nbsp;&nbsp; Cerrado</span></li>
+        </ul>
+      </div>
+ 
+      <!-- Contact col -->
+      <div class="footer-col">
+        <h4>Encuéntranos</h4>
+        <ul>
+          <li>
+            <span>
+              📍 8038 Fair Ave,<br/>Sun Valley, CA 91352
+            </span>
+          </li>
+          <li>
+            <a href="https://wa.me/message/XXXXXXXXXX" target="_blank" rel="noopener noreferrer">
+              💬 WhatsApp / Pedidos
+            </a>
+          </li>
+          <li>
+            <a href="https://instagram.com/bocaditos.la" target="_blank" rel="noopener noreferrer">
+              📸 @bocaditos.la
+            </a>
+          </li>
+        </ul>
+ 
+        <!-- Map placeholder -->
+        <div class="map-embed" role="region" aria-label="Location map">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+          </svg>
+          <span>8038 Fair Ave, Sun Valley, CA</span>
+          <!--
+            REPLACE con embed real de Google Maps:
+            <iframe src="https://maps.google.com/maps?q=8038+Fair+Ave+Sun+Valley+CA&output=embed"
+              width="100%" height="100%" style="border:0" loading="lazy"
+              allowfullscreen title="Bocaditos location map">
+            </iframe>
+          -->
+          <a href="https://maps.google.com/?q=8038+Fair+Ave+Sun+Valley+CA" target="_blank" rel="noopener noreferrer">
+            Ver en Google Maps →
+          </a>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="footer-bottom">
+      <p>© 2026 Bocaditos Artisan Bakery &amp; Lounge. Todos los derechos reservados.</p>
+      <p>Made with ❤️ in Sun Valley, CA · <a href="https://instagram.com/bocaditos.la" target="_blank" rel="noopener noreferrer">@bocaditos.la</a></p>
+    </div>
+  </div>
+</footer>
+ 
+<!-- ══ WHATSAPP FAB ══ -->
+<a href="https://wa.me/message/XXXXXXXXXX" target="_blank" rel="noopener noreferrer"
+   class="wa-fab" aria-label="Chat with Bocaditos on WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+ 
+<!-- ══ JAVASCRIPT ══ -->
+<script>
+  /* ─────────────────────────────────────────
+     1. STICKY HEADER
+  ───────────────────────────────────────── */
+  const header = document.getElementById('header');
+ 
+  const onScroll = () => {
+    if (window.scrollY > 40) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+ 
+  /* ─────────────────────────────────────────
+     2. MOBILE MENU
+  ───────────────────────────────────────── */
+  const hamburger   = document.getElementById('hamburger');
+  const mobileMenu  = document.getElementById('mobile-menu');
+  let menuOpen = false;
+ 
+  function openMobileMenu() {
+    menuOpen = true;
+    hamburger.classList.add('active');
+    hamburger.setAttribute('aria-expanded', 'true');
+    mobileMenu.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+ 
+  function closeMobileMenu() {
+    menuOpen = false;
+    hamburger.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', 'false');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+ 
+  hamburger.addEventListener('click', () => {
+    menuOpen ? closeMobileMenu() : openMobileMenu();
+  });
+ 
+  // Close on Escape key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && menuOpen) closeMobileMenu();
+  });
+ 
+  /* ─────────────────────────────────────────
+     3. SCROLL REVEAL (Intersection Observer)
+  ───────────────────────────────────────── */
+  const revealEls = document.querySelectorAll('.reveal');
+ 
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target); // animate once
+      }
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: '0px 0px -40px 0px'
+  });
+ 
+  revealEls.forEach(el => revealObserver.observe(el));
+ 
+  /* ─────────────────────────────────────────
+     4. ACTIVE NAV LINK (highlight on scroll)
+  ───────────────────────────────────────── */
+  const sections  = document.querySelectorAll('section[id], footer[id]');
+  const navLinks  = document.querySelectorAll('.nav-links a');
+ 
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(link => {
+          link.style.color = link.getAttribute('href') === `#${id}`
+            ? 'var(--white)' : '';
+        });
+      }
+    });
+  }, { threshold: 0.4 });
+ 
+  sections.forEach(s => sectionObserver.observe(s));
+ 
+  /* ─────────────────────────────────────────
+     5. INSTAGRAM POSTS — click to open IG
+  ───────────────────────────────────────── */
+  document.querySelectorAll('.insta-post').forEach(post => {
+    post.addEventListener('click', () => {
+      window.open('https://instagram.com/bocaditos.la', '_blank', 'noopener,noreferrer');
+    });
+    // keyboard accessible
+    post.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        window.open('https://instagram.com/bocaditos.la', '_blank', 'noopener,noreferrer');
+      }
+    });
+  });
+ 
+  /* ─────────────────────────────────────────
+     6. PARALLAX — subtle hero text drift
+  ───────────────────────────────────────── */
+  const heroBg = document.querySelector('.hero-bg');
+  let ticking  = false;
+ 
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (heroBg) {
+          heroBg.style.transform = `translateY(${y * 0.3}px)`;
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+ 
+  /* ─────────────────────────────────────────
+     7. TICKER pause on hover
+  ───────────────────────────────────────── */
+  const ticker = document.querySelector('.ticker');
+  if (ticker) {
+    ticker.parentElement.addEventListener('mouseenter', () => {
+      ticker.style.animationPlayState = 'paused';
+    });
+    ticker.parentElement.addEventListener('mouseleave', () => {
+      ticker.style.animationPlayState = 'running';
+    });
+  }
+</script>
+</body>
+</html>
+ 
